@@ -159,4 +159,6 @@ public interface DefaultWorkbenchConstants
 
     String LayoutEditorComponentPalette();
 
+    String CaseModeller();
+
 }
