@@ -1,0 +1,55 @@
+{
+  "name": "CASE_MGMT",
+  "path": ".",
+  "css": "shapes/cm-shapes.css",
+  "stencils": [
+    {
+      "id": "userTask",
+      "name": "Task - User",
+      "shape": {
+        "path": "shapes/",
+        "file": "task.svg"
+      },
+      "icon": {
+        "path": "icons/task/",
+        "file": "task-user.svg"
+      }
+    },
+    {
+      "id": "scriptTask",
+      "name": "Task - Script",
+      "shape": {
+        "path": "shapes/",
+        "file": "task.svg"
+      },
+      "icon": {
+        "path": "icons/task/",
+        "file": "task-script.svg"
+      }
+    },
+    {
+      "id": "businessRuleTask",
+      "name": "Task - Business Rule",
+      "shape": {
+        "path": "shapes/",
+        "file": "task.svg"
+      },
+      "icon": {
+        "path": "icons/task/",
+        "file": "task-business-rule.svg"
+      }
+    },
+    {
+      "id": "serviceTask",
+      "name": "Task - Service",
+      "shape": {
+        "path": "shapes/",
+        "file": "task.svg"
+      },
+      "icon": {
+        "path": "icons/task/",
+        "file": "task.svg"
+      }
+    }
+  ]
+}
