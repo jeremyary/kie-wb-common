@@ -33,7 +33,6 @@ import org.kie.workbench.common.stunner.bpmn.definition.ExclusiveGateway;
 import org.kie.workbench.common.stunner.bpmn.definition.Lane;
 import org.kie.workbench.common.stunner.bpmn.definition.NoneTask;
 import org.kie.workbench.common.stunner.bpmn.definition.ParallelGateway;
-import org.kie.workbench.common.stunner.bpmn.definition.ScriptTask;
 import org.kie.workbench.common.stunner.bpmn.definition.SequenceFlow;
 import org.kie.workbench.common.stunner.bpmn.definition.StartNoneEvent;
 import org.kie.workbench.common.stunner.bpmn.definition.UserTask;
@@ -57,42 +56,50 @@ import static org.kie.workbench.common.stunner.core.client.components.palette.De
 public class CaseManagementPaletteDefinitionBuilder
         implements PaletteDefinitionBuilder<AbstractCanvasHandler, DefaultPaletteDefinition> {
 
-    public static final String STAGES = "Stages";
-    public static final String ACTIVITIES = "Activities";
+    public static final String STAGE = "Stage";
+    public static final String SUBCASE = "Subcase";
+    public static final String USERTASK = "User Task";
+    public static final String SUBPROCESS = "Subprocess";
 
-    private static final Map<String, String> CAT_TITLES = new HashMap<String, String>(2) {{
-        put(STAGES,
-            STAGES);
-        put(ACTIVITIES,
-            ACTIVITIES);
+    private static final Map<String, String> CAT_TITLES = new HashMap<String, String>(4) {{
+        put(SUBPROCESS, SUBPROCESS);
+        put(USERTASK, USERTASK);
+        put(SUBCASE, SUBCASE);
+        put(STAGE, STAGE);
     }};
 
-    private static final Map<String, Class<?>> CAT_DEFAULTS = new HashMap<String, Class<?>>(2) {{
-        put(STAGES,
-            AdHocSubprocess.class);
-        put(ACTIVITIES,
+    private static final Map<String, Class<?>> CAT_DEFAULTS = new HashMap<String, Class<?>>(4) {{
+        put(SUBPROCESS,
             BusinessRuleTask.class);
+        put(USERTASK,
+            UserTask.class);
+        put(SUBCASE,
+            ReusableSubprocess.class);
+        put(STAGE,
+            AdHocSubprocess.class);
     }};
 
     @SuppressWarnings("unchecked")
-    private final static Map<String, Glyph> CATEGORY_GLYPHS = new HashMap<String, Glyph>(2) {{
-        put(STAGES,
-            BS3IconTypeGlyph.create(IconType.STAR));
-        put(ACTIVITIES,
+    private final static Map<String, Glyph> CATEGORY_GLYPHS = new HashMap<String, Glyph>(4) {{
+        put(SUBPROCESS,
+            BS3IconTypeGlyph.create(IconType.LIST));
+        put(USERTASK,
+            BS3IconTypeGlyph.create(IconType.USER));
+        put(SUBCASE,
+            BS3IconTypeGlyph.create(IconType.COPY));
+        put(STAGE,
             BS3IconTypeGlyph.create(IconType.TASKS));
     }};
 
-    private static final Map<String, String> DEFINITION_CATEGORY_MAPPINGS = new HashMap<String, String>(5) {{
-        put(AdHocSubprocess.class.getName(),
-            STAGES);
-        put(UserTask.class.getName(),
-            ACTIVITIES);
-        put(ScriptTask.class.getName(),
-            ACTIVITIES);
+    private static final Map<String, String> DEFINITION_CATEGORY_MAPPINGS = new HashMap<String, String>(4) {{
         put(BusinessRuleTask.class.getName(),
-            ACTIVITIES);
+            SUBPROCESS);
+        put(UserTask.class.getName(),
+            USERTASK);
         put(ReusableSubprocess.class.getName(),
-            ACTIVITIES);
+            SUBCASE);
+        put(AdHocSubprocess.class.getName(),
+            STAGE);
     }};
 
     private final ExpandedPaletteDefinitionBuilder paletteDefinitionBuilder;
