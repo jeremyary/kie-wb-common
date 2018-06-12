@@ -162,11 +162,11 @@ public class DefaultPaletteDefinitionProviders {
      */
     public static class CategoryDefinitionProvider {
 
-        private final Class<?> categoryTYpe;
+        private final Class<?> categoryType;
         private final Map<String, CategoryDefinition> definitions;
 
-        public CategoryDefinitionProvider(final Class<?> categoryTYpe) {
-            this.categoryTYpe = categoryTYpe;
+        public CategoryDefinitionProvider(final Class<?> categoryType) {
+            this.categoryType = categoryType;
             this.definitions = new LinkedHashMap<>();
         }
 
@@ -199,7 +199,7 @@ public class DefaultPaletteDefinitionProviders {
         }
 
         public ItemMessageProvider categoryMessageProvider(final StunnerTranslationService translationService) {
-            return new DefaultCategoryMessageProvider(categoryTYpe,
+            return new DefaultCategoryMessageProvider(categoryType,
                                                       translationService);
         }
     }

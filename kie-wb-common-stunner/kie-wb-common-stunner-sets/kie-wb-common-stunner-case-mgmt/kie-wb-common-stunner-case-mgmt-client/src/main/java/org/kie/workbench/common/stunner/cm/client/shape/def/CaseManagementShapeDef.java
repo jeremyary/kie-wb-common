@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,53 @@
 
 package org.kie.workbench.common.stunner.cm.client.shape.def;
 
-import org.kie.workbench.common.stunner.bpmn.client.resources.BPMNImageResources;
-import org.kie.workbench.common.stunner.bpmn.client.shape.def.BPMNShapeDef;
-import org.kie.workbench.common.stunner.bpmn.definition.BPMNViewDefinition;
-import org.kie.workbench.common.stunner.core.client.shape.ImageDataUriGlyph;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+
+import org.kie.workbench.common.stunner.cm.client.shape.view.handler.CaseManagementShapeViewHandlers;
+import org.kie.workbench.common.stunner.cm.definition.general.CaseManagementViewDefinition;
 import org.kie.workbench.common.stunner.core.client.shape.view.ShapeView;
-import org.kie.workbench.common.stunner.core.client.shape.view.handler.SizeHandler;
-import org.kie.workbench.common.stunner.core.definition.shape.Glyph;
+import org.kie.workbench.common.stunner.core.client.shape.view.handler.FontHandler;
+import org.kie.workbench.common.stunner.core.client.shape.view.handler.TitleHandler;
+import org.kie.workbench.common.stunner.core.client.shape.view.handler.ViewAttributesHandler;
+import org.kie.workbench.common.stunner.core.definition.shape.ShapeViewDef;
 
-public interface CaseManagementShapeDef<W extends BPMNViewDefinition, V extends ShapeView>
-        extends BPMNShapeDef<W, V> {
+public interface CaseManagementShapeDef<W extends CaseManagementViewDefinition, V extends ShapeView>
+        extends ShapeViewDef<W, V> {
 
-    ImageDataUriGlyph GLYPH_OOME_HACK = ImageDataUriGlyph.create(BPMNImageResources.INSTANCE.glyphOOMEHack().getSafeUri());
-
-    default SizeHandler.Builder<W, V> newSizeHandlerBuilder() {
-        return new SizeHandler.Builder<>();
+    @Override
+    default Optional<BiConsumer<String, V>> titleHandler() {
+        return Optional.of(newTitleHandler()::handle);
     }
 
     @Override
-    default Glyph getGlyph(final Class<? extends W> type,
-                           final String defId) {
-        return GLYPH_OOME_HACK;
+    @SuppressWarnings("unchecked")
+    default Optional<BiConsumer<W, V>> fontHandler() {
+        return Optional.of(newFontHandler()::handle);
+    }
+
+    @Override
+    default BiConsumer<W, V> viewHandler() {
+        return newViewAttributesHandler()::handle;
+    }
+
+    default TitleHandler<ShapeView> newTitleHandler() {
+        return CaseManagementShapeViewHandlers.TITLE_HANDLER;
+    }
+
+    default CaseManagementShapeViewHandlers.FontHandlerBuilder<W, V> newFontHandlerBuilder() {
+        return new CaseManagementShapeViewHandlers.FontHandlerBuilder<>();
+    }
+
+    default CaseManagementShapeViewHandlers.ViewAttributesHandlerBuilder<W, V> newViewAttributesHandlerBuilder() {
+        return new CaseManagementShapeViewHandlers.ViewAttributesHandlerBuilder<>();
+    }
+
+    default FontHandler<W, V> newFontHandler() {
+        return newFontHandlerBuilder().build();
+    }
+
+    default ViewAttributesHandler<W, V> newViewAttributesHandler() {
+        return newViewAttributesHandlerBuilder().build();
     }
 }

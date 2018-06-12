@@ -23,6 +23,20 @@ public interface CaseManagementImageResources extends ClientBundleWithLookup {
 
     CaseManagementImageResources INSTANCE = GWT.create(CaseManagementImageResources.class);
 
+    // ****** BPMN ShapeSet Thumbnail. *******
     @Source("images/cmicon.png")
     ImageResource cmicon();
+
+    // ****** Tasks *******
+    @Source("images/icons/task/task-user.png")
+    ImageResource stage();
+
+    @Source("images/icons/task/task-script.png")
+    ImageResource userTask();
+
+    @Source("images/icons/task/task-business-rule.png")
+    ImageResource subprocess();
+
+    @Source("images/icons/task/task-service.png")
+    ImageResource subcase();
 }

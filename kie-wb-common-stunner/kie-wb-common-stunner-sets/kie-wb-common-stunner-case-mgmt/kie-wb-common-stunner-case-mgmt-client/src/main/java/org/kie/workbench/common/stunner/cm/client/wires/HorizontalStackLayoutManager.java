@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,9 +61,13 @@ public class HorizontalStackLayoutManager extends AbstractNestedLayoutHandler {
     @Override
     public void layout(final WiresContainer container) {
         double x = PADDING_X;
+        boolean isFirstPadding = true; // leave room for overlaying palette
         for (WiresShape ws : container.getChildShapes()) {
-            ws.setLocation(new Point2D(x,
-                                       PADDING_Y));
+            if (isFirstPadding) {
+                x = 75;
+                isFirstPadding = false;
+            }
+            ws.setLocation(new Point2D(x, PADDING_Y));
             x = x + ws.getPath().getBoundingBox().getWidth() + PADDING_X;
         }
     }

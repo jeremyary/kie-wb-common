@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,46 +17,29 @@
 package org.kie.workbench.common.stunner.cm.client.shape.def;
 
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
-import org.kie.workbench.common.stunner.cm.client.shape.view.DiagramView;
-import org.kie.workbench.common.stunner.cm.definition.CaseManagementDiagram;
-import org.kie.workbench.common.stunner.core.definition.shape.ShapeDef;
-import org.kie.workbench.common.stunner.core.graph.content.view.View;
-import org.kie.workbench.common.stunner.shapes.def.RectangleShapeDef;
+import org.kie.workbench.common.stunner.bpmn.client.shape.def.BaseDimensionedShapeDef;
+import org.kie.workbench.common.stunner.cm.client.resources.CaseManagementSvgViewFactory;
+import org.kie.workbench.common.stunner.cm.definition.CaseManagementDiagramImpl;
+import org.kie.workbench.common.stunner.core.client.shape.view.handler.SizeHandler;
+import org.kie.workbench.common.stunner.svg.client.shape.view.SVGShapeView;
 
-public final class CaseManagementDiagramShapeDef
-        implements RectangleShapeDef<CaseManagementDiagram, DiagramView>,
-                   CaseManagementShapeDef<CaseManagementDiagram, DiagramView> {
-
-    public static final double WIDTH = 950;
-    public static final double HEIGHT = 950;
+public class CaseManagementDiagramShapeDef extends BaseDimensionedShapeDef
+        implements CaseManagementSvgShapeDef<CaseManagementDiagramImpl> {
 
     @Override
-    public Optional<BiConsumer<View<CaseManagementDiagram>, DiagramView>> sizeHandler() {
-        return Optional.of(newSizeHandlerBuilder()
-                                   .width(this::getWidth)
-                                   .height(this::getHeight)
-                                   .build()::handle);
+    public SizeHandler<CaseManagementDiagramImpl, SVGShapeView> newSizeHandler() {
+        return newSizeHandlerBuilder()
+                .width(e -> e.getDimensionsSet().getWidth().getValue())
+                .height(e -> e.getDimensionsSet().getHeight().getValue())
+                .build();
     }
 
     @Override
-    public Double getWidth(final CaseManagementDiagram element) {
-        return WIDTH;
-    }
-
-    @Override
-    public Double getHeight(final CaseManagementDiagram element) {
-        return HEIGHT;
-    }
-
-    @Override
-    public double getCornerRadius(final CaseManagementDiagram element) {
-        return 0;
-    }
-
-    @Override
-    public Class<? extends ShapeDef> getType() {
-        return CaseManagementDiagramShapeDef.class;
+    public SVGShapeView<?> newViewInstance(final CaseManagementSvgViewFactory factory,
+                                           final CaseManagementDiagramImpl diagram) {
+        return newViewInstance(Optional.ofNullable(diagram.getDimensionsSet().getWidth()),
+                               Optional.ofNullable(diagram.getDimensionsSet().getHeight()),
+                               factory.rectangle());
     }
 }

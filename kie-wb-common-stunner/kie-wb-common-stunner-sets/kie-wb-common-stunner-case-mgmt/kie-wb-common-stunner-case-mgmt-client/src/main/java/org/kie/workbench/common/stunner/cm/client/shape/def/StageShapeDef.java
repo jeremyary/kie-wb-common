@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,46 @@
 
 package org.kie.workbench.common.stunner.cm.client.shape.def;
 
-import org.kie.workbench.common.stunner.bpmn.definition.BPMNViewDefinition;
-import org.kie.workbench.common.stunner.core.client.shape.view.ShapeView;
+import java.util.Optional;
 
-public interface StageShapeDef<W extends BPMNViewDefinition, V extends ShapeView>
-        extends CaseManagementShapeDef<W, V> {
+import org.kie.workbench.common.stunner.bpmn.client.shape.def.BaseDimensionedShapeDef;
+import org.kie.workbench.common.stunner.cm.client.resources.CaseManagementSvgGlyphFactory;
+import org.kie.workbench.common.stunner.cm.client.resources.CaseManagementSvgViewFactory;
+import org.kie.workbench.common.stunner.cm.definition.Stage;
+import org.kie.workbench.common.stunner.core.client.shape.view.HasTitle;
+import org.kie.workbench.common.stunner.core.client.shape.view.handler.FontHandler;
+import org.kie.workbench.common.stunner.core.client.shape.view.handler.SizeHandler;
+import org.kie.workbench.common.stunner.core.definition.shape.Glyph;
+import org.kie.workbench.common.stunner.svg.client.shape.view.SVGShapeView;
 
-    double getDropAreaWidth(final W element);
+public class StageShapeDef extends BaseDimensionedShapeDef implements CaseManagementSvgShapeDef<Stage> {
 
-    double getDropAreaHeight(final W element);
+    @Override
+    public FontHandler<Stage, SVGShapeView> newFontHandler() {
+        return newFontHandlerBuilder()
+                .positon(c -> HasTitle.Position.CENTER)
+                .build();
+    }
 
-    double getWidth(final W element);
+    @Override
+    public SizeHandler<Stage, SVGShapeView> newSizeHandler() {
+        return newSizeHandlerBuilder()
+                .width(e -> e.getDimensionsSet().getWidth().getValue())
+                .height(e -> e.getDimensionsSet().getHeight().getValue())
+                .minWidth(task -> 200d)
+                .minHeight(task -> 200d)
+                .build();
+    }
 
-    double getHeight(final W element);
+    @Override
+    public SVGShapeView<?> newViewInstance(final CaseManagementSvgViewFactory factory, final Stage stage) {
+        return newViewInstance(Optional.ofNullable(stage.getDimensionsSet().getWidth()),
+                               Optional.ofNullable(stage.getDimensionsSet().getHeight()),
+                               factory.stage());
+    }
 
-    double getVOffset(final W element);
+    @Override
+    public Glyph getGlyph(final Class<? extends Stage> type, final String defId) {
+        return CaseManagementSvgGlyphFactory.STAGE_GLYPH;
+    }
 }

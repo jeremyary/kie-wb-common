@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,176 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.kie.workbench.common.stunner.cm.definition;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.kie.workbench.common.stunner.cm.definition.general.CaseManagementViewDefinition;
+import org.kie.workbench.common.stunner.cm.definition.general.DiagramSet;
 
-import javax.validation.Valid;
+public interface CaseManagementDiagram extends CaseManagementViewDefinition {
 
-import org.jboss.errai.common.client.api.annotations.MapsTo;
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jboss.errai.databinding.client.api.Bindable;
-import org.kie.workbench.common.forms.adf.definitions.annotations.FieldParam;
-import org.kie.workbench.common.forms.adf.definitions.annotations.FormDefinition;
-import org.kie.workbench.common.forms.adf.definitions.annotations.FormField;
-import org.kie.workbench.common.forms.adf.definitions.settings.FieldPolicy;
-import org.kie.workbench.common.stunner.bpmn.definition.BPMNBaseInfo;
-import org.kie.workbench.common.stunner.bpmn.definition.BPMNCategories;
-import org.kie.workbench.common.stunner.bpmn.definition.BPMNDiagram;
-import org.kie.workbench.common.stunner.bpmn.definition.property.background.BackgroundSet;
-import org.kie.workbench.common.stunner.bpmn.definition.property.diagram.DiagramSet;
-import org.kie.workbench.common.stunner.bpmn.definition.property.dimensions.RectangleDimensionsSet;
-import org.kie.workbench.common.stunner.bpmn.definition.property.font.FontSet;
-import org.kie.workbench.common.stunner.bpmn.definition.property.variables.ProcessData;
-import org.kie.workbench.common.stunner.core.definition.annotation.Definition;
-import org.kie.workbench.common.stunner.core.definition.annotation.PropertySet;
-import org.kie.workbench.common.stunner.core.definition.annotation.definition.Category;
-import org.kie.workbench.common.stunner.core.definition.annotation.definition.Labels;
-import org.kie.workbench.common.stunner.core.factory.graph.NodeFactory;
-import org.kie.workbench.common.stunner.core.rule.annotation.CanContain;
-import org.kie.workbench.common.stunner.core.util.HashUtil;
-
-import static org.kie.workbench.common.forms.adf.engine.shared.formGeneration.processing.fields.fieldInitializers.nestedForms.SubFormFieldInitializer.COLLAPSIBLE_CONTAINER;
-import static org.kie.workbench.common.forms.adf.engine.shared.formGeneration.processing.fields.fieldInitializers.nestedForms.SubFormFieldInitializer.FIELD_CONTAINER_PARAM;
-
-@Portable
-@Bindable
-@Definition(graphFactory = NodeFactory.class)
-@CanContain(roles = {"cm_stage", "cm_nop"})
-@FormDefinition(
-        startElement = "diagramSet",
-        policy = FieldPolicy.ONLY_MARKED,
-        defaultFieldSettings = {@FieldParam(name = FIELD_CONTAINER_PARAM, value = COLLAPSIBLE_CONTAINER)}
-)
-// This is a clone of org.kie.workbench.common.stunner.bpmn.definition.BPMNDiagram with different containment rules.
-// Unfortunately extending the foregoing and providing a new @CanContain annotation leads to problems with identifying
-// Factories for Definitions; as CM's BindableDefinitionAdapterProxy is then generated with support for the super-class.
-// This then leads the unmarshalling of model Elements to Definitions to use the wrong Factory and hence fail.
-public class CaseManagementDiagram implements BPMNDiagram {
-
-    @Category
-    public static final transient String category = BPMNCategories.CONTAINERS;
-
-    @PropertySet
-    @FormField
-    @Valid
-    private DiagramSet diagramSet;
-
-    @PropertySet
-    @FormField(
-            afterElement = "diagramSet"
-    )
-    @Valid
-    protected ProcessData processData;
-
-    @PropertySet
-    private BackgroundSet backgroundSet;
-
-    @PropertySet
-    private FontSet fontSet;
-
-    @PropertySet
-    protected RectangleDimensionsSet dimensionsSet;
-
-    @Labels
-    private final Set<String> labels = new HashSet<String>() {{
-        add("canContainArtifacts");
-        add("diagram");
-    }};
-
-    public CaseManagementDiagram() {
-        this(new DiagramSet(""),
-             new ProcessData(),
-             new BackgroundSet(),
-             new FontSet(),
-             new RectangleDimensionsSet());
-    }
-
-    public CaseManagementDiagram(final @MapsTo("diagramSet") DiagramSet diagramSet,
-                                 final @MapsTo("processData") ProcessData processData,
-                                 final @MapsTo("backgroundSet") BackgroundSet backgroundSet,
-                                 final @MapsTo("fontSet") FontSet fontSet,
-                                 final @MapsTo("dimensionsSet") RectangleDimensionsSet dimensionsSet) {
-        this.diagramSet = diagramSet;
-        this.processData = processData;
-        this.backgroundSet = backgroundSet;
-        this.fontSet = fontSet;
-        this.dimensionsSet = dimensionsSet;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public Set<String> getLabels() {
-        return labels;
-    }
-
-    public DiagramSet getDiagramSet() {
-        return diagramSet;
-    }
-
-    public RectangleDimensionsSet getDimensionsSet() {
-        return dimensionsSet;
-    }
-
-    public void setDimensionsSet(final RectangleDimensionsSet dimensionsSet) {
-        this.dimensionsSet = dimensionsSet;
-    }
-
-    public ProcessData getProcessData() {
-        return processData;
-    }
-
-    public BackgroundSet getBackgroundSet() {
-        return backgroundSet;
-    }
-
-    public FontSet getFontSet() {
-        return fontSet;
-    }
-
-    public void setDiagramSet(final DiagramSet diagramSet) {
-        this.diagramSet = diagramSet;
-    }
-
-    public void setProcessData(final ProcessData processData) {
-        this.processData = processData;
-    }
-
-    public void setBackgroundSet(final BackgroundSet backgroundSet) {
-        this.backgroundSet = backgroundSet;
-    }
-
-    public void setFontSet(final FontSet fontSet) {
-        this.fontSet = fontSet;
-    }
-
-    @Override
-    public BPMNBaseInfo getGeneral() {
-        return getDiagramSet();
-    }
-
-    @Override
-    public int hashCode() {
-        return HashUtil.combineHashCodes(diagramSet.hashCode(),
-                                         processData.hashCode(),
-                                         backgroundSet.hashCode(),
-                                         fontSet.hashCode(),
-                                         dimensionsSet.hashCode());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof CaseManagementDiagram) {
-            CaseManagementDiagram other = (CaseManagementDiagram) o;
-            return diagramSet.equals(other.diagramSet) &&
-                    processData.equals(other.processData) &&
-                    backgroundSet.equals(other.backgroundSet) &&
-                    fontSet.equals(other.fontSet) &&
-                    dimensionsSet.equals(other.dimensionsSet);
-        }
-        return false;
-    }
+    DiagramSet getDiagramSet();
 }

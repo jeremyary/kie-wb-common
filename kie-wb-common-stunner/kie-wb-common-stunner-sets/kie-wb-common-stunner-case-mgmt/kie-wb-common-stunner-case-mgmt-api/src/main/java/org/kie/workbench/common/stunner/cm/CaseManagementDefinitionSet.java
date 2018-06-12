@@ -28,14 +28,18 @@ import org.kie.workbench.common.stunner.bpmn.definition.IntermediateTimerEvent;
 import org.kie.workbench.common.stunner.bpmn.definition.Lane;
 import org.kie.workbench.common.stunner.bpmn.definition.NoneTask;
 import org.kie.workbench.common.stunner.bpmn.definition.ParallelGateway;
+import org.kie.workbench.common.stunner.bpmn.definition.ReusableSubprocess;
 import org.kie.workbench.common.stunner.bpmn.definition.ScriptTask;
 import org.kie.workbench.common.stunner.bpmn.definition.SequenceFlow;
 import org.kie.workbench.common.stunner.bpmn.definition.StartNoneEvent;
 import org.kie.workbench.common.stunner.bpmn.definition.StartSignalEvent;
 import org.kie.workbench.common.stunner.bpmn.definition.StartTimerEvent;
 import org.kie.workbench.common.stunner.bpmn.definition.UserTask;
-import org.kie.workbench.common.stunner.cm.definition.CaseManagementDiagram;
-import org.kie.workbench.common.stunner.cm.definition.ReusableSubprocess;
+import org.kie.workbench.common.stunner.cm.definition.CaseManagementDiagramImpl;
+import org.kie.workbench.common.stunner.cm.definition.HumanTask;
+import org.kie.workbench.common.stunner.cm.definition.Stage;
+import org.kie.workbench.common.stunner.cm.definition.Subcase;
+import org.kie.workbench.common.stunner.cm.definition.Subprocess;
 import org.kie.workbench.common.stunner.cm.factory.CaseManagementGraphFactory;
 import org.kie.workbench.common.stunner.cm.qualifiers.CaseManagementEditor;
 import org.kie.workbench.common.stunner.core.definition.annotation.DefinitionSet;
@@ -50,7 +54,11 @@ import org.kie.workbench.common.stunner.core.rule.annotation.Occurrences;
         graphFactory = CaseManagementGraphFactory.class,
         qualifier = CaseManagementEditor.class,
         definitions = {
-                CaseManagementDiagram.class,
+                CaseManagementDiagramImpl.class,
+                Stage.class,
+                HumanTask.class,
+                Subprocess.class,
+                Subcase.class,
                 Lane.class,
                 NoneTask.class,
                 UserTask.class,

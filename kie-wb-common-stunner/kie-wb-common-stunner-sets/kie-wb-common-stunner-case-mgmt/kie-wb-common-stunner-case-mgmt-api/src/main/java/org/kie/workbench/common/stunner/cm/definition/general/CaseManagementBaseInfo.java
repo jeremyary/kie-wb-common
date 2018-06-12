@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package org.kie.workbench.common.stunner.cm.client.shape.def;
+package org.kie.workbench.common.stunner.cm.definition.general;
 
-import org.kie.workbench.common.stunner.bpmn.definition.BPMNViewDefinition;
-import org.kie.workbench.common.stunner.cm.client.shape.view.NullView;
-import org.kie.workbench.common.stunner.core.definition.shape.ShapeDef;
+import org.kie.workbench.common.stunner.bpmn.definition.property.general.Documentation;
+import org.kie.workbench.common.stunner.bpmn.definition.property.general.Name;
 
-public class NullShapeDef implements CaseManagementShapeDef<BPMNViewDefinition, NullView> {
+public interface CaseManagementBaseInfo {
 
-    @Override
-    public Class<? extends ShapeDef> getType() {
-        return NullShapeDef.class;
-    }
+    Name getName();
+
+    Documentation getDocumentation();
 }

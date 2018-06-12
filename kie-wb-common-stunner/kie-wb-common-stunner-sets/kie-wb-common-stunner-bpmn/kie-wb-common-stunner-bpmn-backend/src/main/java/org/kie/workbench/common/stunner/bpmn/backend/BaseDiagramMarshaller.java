@@ -98,23 +98,20 @@ public abstract class BaseDiagramMarshaller<D> implements DiagramMarshaller<Grap
 
     @Override
     @SuppressWarnings("unchecked")
-    public String marshall(final Diagram diagram) throws IOException {
-        LOG.debug("Starting diagram marshalling...");
+    public String marshall(final Diagram diagram) {
 
-        final Bpmn2Marshaller marshaller = new Bpmn2Marshaller(definitionManager,
-                                                               oryxManager);
+        LOG.debug("Starting diagram marshalling...");
+        final Bpmn2Marshaller marshaller = new Bpmn2Marshaller(definitionManager, oryxManager);
+
         String result = null;
         try {
             // Marshall the diagram definition
-            result = marshaller.marshall(diagram,
-                                         getPreProcessingData(diagram.getMetadata()));
+            result = marshaller.marshall(diagram, getPreProcessingData(diagram.getMetadata()));
 
             // Update diagram's settings.
-            updateRootUUID(diagram.getMetadata(),
-                           diagram.getGraph());
+            updateRootUUID(diagram.getMetadata(), diagram.getGraph());
         } catch (IOException e) {
-            LOG.error("Error marshalling file.",
-                      e);
+            LOG.error("Error marshalling file.", e);
         }
 
         LOG.debug("Diagram marshalling finished successfully.");
@@ -124,44 +121,32 @@ public abstract class BaseDiagramMarshaller<D> implements DiagramMarshaller<Grap
     protected abstract String getPreProcessingData(Metadata metadata);
 
     public JBPMBpmn2ResourceImpl marshallToBpmn2Resource(final Diagram<Graph, Metadata> diagram) throws IOException {
-        final Bpmn2Marshaller marshaller = new Bpmn2Marshaller(definitionManager,
-                                                               oryxManager);
-        return marshaller.marshallToBpmn2Resource(diagram,
-                                                  getPreProcessingData(diagram.getMetadata()));
+        return new Bpmn2Marshaller(definitionManager, oryxManager)
+                .marshallToBpmn2Resource(diagram, getPreProcessingData(diagram.getMetadata()));
     }
 
     @Override
     public Graph unmarshall(final Metadata metadata,
-                            final InputStream inputStream) throws IOException {
+                            final InputStream inputStream) {
         LOG.debug("Starting diagram unmarshalling...");
 
         // No rule checking for marshalling/unmarshalling, current jbpm designer marshallers should do it for us.
-        final Bpmn2UnMarshaller parser = new Bpmn2UnMarshaller(bpmnGraphBuilderFactory,
-                                                               definitionManager,
-                                                               factoryManager,
-                                                               definitionsCacheRegistry,
-                                                               rulesManager,
-                                                               oryxManager,
-                                                               graphCommandManager,
-                                                               commandFactory,
-                                                               indexBuilder,
-                                                               getDiagramDefinitionSetClass(),
-                                                               getDiagramDefinitionClass());
-
+        final Bpmn2UnMarshaller parser = new Bpmn2UnMarshaller(bpmnGraphBuilderFactory, definitionManager, factoryManager,
+                                                               definitionsCacheRegistry, rulesManager, oryxManager,
+                                                               graphCommandManager, commandFactory, indexBuilder,
+                                                               getDiagramDefinitionSetClass(), getDiagramDefinitionClass());
         Graph result = null;
         try {
             // Unmarshall the diagram definition
             final Definitions definitions = parseDefinitions(inputStream);
             parser.setProfile(new DefaultProfileImpl());
-            result = parser.unmarshall(definitions,
-                                       getPreProcessingData(metadata));
+            result = parser.unmarshall(definitions, getPreProcessingData(metadata));
 
             // Update diagram's settings.
-            updateRootUUID(metadata,
-                           result);
+            updateRootUUID(metadata, result);
+
         } catch (IOException e) {
-            LOG.error("Error unmarshalling file.",
-                      e);
+            LOG.error("Error unmarshalling file.", e);
         }
 
         LOG.debug("Diagram unmarshalling finished successfully.");
@@ -172,15 +157,15 @@ public abstract class BaseDiagramMarshaller<D> implements DiagramMarshaller<Grap
 
     public abstract Class<? extends BPMNDiagram> getDiagramDefinitionClass();
 
-    public void updateRootUUID(final Metadata settings,
-                               final Graph graph) {
+    public void updateRootUUID(final Metadata settings, final Graph graph) {
+
         // Update settings's root UUID.
         final String rootUUID = getRootUUID(graph);
         settings.setCanvasRootUUID(rootUUID);
     }
 
-    public void updateTitle(final Metadata metadata,
-                            final Graph graph) {
+    public void updateTitle(final Metadata metadata, final Graph graph) {
+
         // Update metadata's title.
         final String title = getTitle(graph);
         metadata.setTitle(title);

@@ -31,13 +31,12 @@ import org.uberfire.workbench.category.Category;
 public class CaseManagementDefinitionSetResourceType extends AbstractDefinitionSetResourceType {
 
     private static final String CM_EXTENSION = "bpmn-cm";
-    private static final String NAME = "Case Management (Preview)";
-    private static final String DESCRIPTION = "Case Management (Preview)";
+    private static final String NAME = "Case Management";
+    private static final String DESCRIPTION = "Case Management";
 
     private Category category;
 
     public CaseManagementDefinitionSetResourceType() {
-
     }
 
     @Inject

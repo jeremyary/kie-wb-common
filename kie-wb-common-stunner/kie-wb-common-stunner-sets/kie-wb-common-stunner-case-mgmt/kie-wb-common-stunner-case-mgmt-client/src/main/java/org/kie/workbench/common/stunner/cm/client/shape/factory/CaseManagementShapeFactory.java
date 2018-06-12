@@ -20,45 +20,37 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.stunner.bpmn.client.shape.def.SequenceFlowConnectorDef;
-import org.kie.workbench.common.stunner.bpmn.definition.AdHocSubprocess;
-import org.kie.workbench.common.stunner.bpmn.definition.BPMNDefinition;
-import org.kie.workbench.common.stunner.bpmn.definition.BusinessRuleTask;
-import org.kie.workbench.common.stunner.bpmn.definition.EndNoneEvent;
-import org.kie.workbench.common.stunner.bpmn.definition.EndTerminateEvent;
-import org.kie.workbench.common.stunner.bpmn.definition.ExclusiveGateway;
-import org.kie.workbench.common.stunner.bpmn.definition.Lane;
-import org.kie.workbench.common.stunner.bpmn.definition.NoneTask;
-import org.kie.workbench.common.stunner.bpmn.definition.ParallelGateway;
-import org.kie.workbench.common.stunner.bpmn.definition.ScriptTask;
-import org.kie.workbench.common.stunner.bpmn.definition.SequenceFlow;
-import org.kie.workbench.common.stunner.bpmn.definition.StartNoneEvent;
-import org.kie.workbench.common.stunner.bpmn.definition.UserTask;
+import com.google.gwt.core.client.GWT;
+import org.kie.workbench.common.stunner.cm.client.shape.def.HumanTaskShapeDef;
+import org.kie.workbench.common.stunner.cm.client.shape.def.StageShapeDef;
+import org.kie.workbench.common.stunner.cm.client.shape.def.SubcaseShapeDef;
+import org.kie.workbench.common.stunner.cm.client.shape.def.SubprocessShapeDef;
 import org.kie.workbench.common.stunner.cm.client.shape.def.CaseManagementDiagramShapeDef;
-import org.kie.workbench.common.stunner.cm.client.shape.def.CaseManagementReusableSubprocessTaskShapeDef;
-import org.kie.workbench.common.stunner.cm.client.shape.def.CaseManagementSubprocessShapeDef;
-import org.kie.workbench.common.stunner.cm.client.shape.def.CaseManagementTaskShapeDef;
-import org.kie.workbench.common.stunner.cm.client.shape.def.NullShapeDef;
-import org.kie.workbench.common.stunner.cm.definition.CaseManagementDiagram;
-import org.kie.workbench.common.stunner.cm.definition.ReusableSubprocess;
+import org.kie.workbench.common.stunner.cm.definition.CaseManagementDiagramImpl;
+import org.kie.workbench.common.stunner.cm.definition.HumanTask;
+import org.kie.workbench.common.stunner.cm.definition.Stage;
+import org.kie.workbench.common.stunner.cm.definition.Subcase;
+import org.kie.workbench.common.stunner.cm.definition.Subprocess;
+import org.kie.workbench.common.stunner.cm.definition.general.CaseManagmentDefinition;
 import org.kie.workbench.common.stunner.core.client.shape.Shape;
 import org.kie.workbench.common.stunner.core.client.shape.factory.DelegateShapeFactory;
 import org.kie.workbench.common.stunner.core.client.shape.factory.ShapeFactory;
 import org.kie.workbench.common.stunner.core.definition.shape.Glyph;
 import org.kie.workbench.common.stunner.shapes.client.factory.BasicShapesFactory;
+import org.kie.workbench.common.stunner.svg.client.shape.factory.SVGShapeFactory;
 
 @Dependent
-public class CaseManagementShapeFactory implements ShapeFactory<BPMNDefinition, Shape> {
+public class CaseManagementShapeFactory implements ShapeFactory<CaseManagmentDefinition, Shape> {
 
-    private final CaseManagementShapeDefFactory caseManagementShapeDefFactory;
     private final BasicShapesFactory basicShapesFactory;
-    private final DelegateShapeFactory<BPMNDefinition, Shape> delegateShapeFactory;
+    private final SVGShapeFactory svgShapeFactory;
+    private final DelegateShapeFactory<CaseManagmentDefinition, Shape> delegateShapeFactory;
 
     @Inject
-    public CaseManagementShapeFactory(final CaseManagementShapeDefFactory caseManagementShapeDefFactory,
+    public CaseManagementShapeFactory(final SVGShapeFactory svgShapeFactory,
                                       final BasicShapesFactory basicShapesFactory,
-                                      final DelegateShapeFactory<BPMNDefinition, Shape> delegateShapeFactory) {
-        this.caseManagementShapeDefFactory = caseManagementShapeDefFactory;
+                                      final DelegateShapeFactory<CaseManagmentDefinition, Shape> delegateShapeFactory) {
+        this.svgShapeFactory = svgShapeFactory;
         this.basicShapesFactory = basicShapesFactory;
         this.delegateShapeFactory = delegateShapeFactory;
     }
@@ -66,57 +58,52 @@ public class CaseManagementShapeFactory implements ShapeFactory<BPMNDefinition, 
     @PostConstruct
     public void init() {
         delegateShapeFactory
-                .delegate(CaseManagementDiagram.class,
+                .delegate(CaseManagementDiagramImpl.class,
                           new CaseManagementDiagramShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(AdHocSubprocess.class,
-                          new CaseManagementSubprocessShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(NoneTask.class,
-                          new CaseManagementTaskShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(UserTask.class,
-                          new CaseManagementTaskShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(ScriptTask.class,
-                          new CaseManagementTaskShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(BusinessRuleTask.class,
-                          new CaseManagementTaskShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(ReusableSubprocess.class,
-                          new CaseManagementReusableSubprocessTaskShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(StartNoneEvent.class,
-                          new NullShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(ParallelGateway.class,
-                          new NullShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(ExclusiveGateway.class,
-                          new NullShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(Lane.class,
-                          new NullShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(EndTerminateEvent.class,
-                          new NullShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(EndNoneEvent.class,
-                          new NullShapeDef(),
-                          () -> caseManagementShapeDefFactory)
-                .delegate(SequenceFlow.class,
-                          new SequenceFlowConnectorDef(),
-                          () -> basicShapesFactory);
+                          () -> svgShapeFactory)
+                .delegate(Stage.class,
+                          new StageShapeDef(),
+                          () -> svgShapeFactory)
+                .delegate(HumanTask.class,
+                          new HumanTaskShapeDef(),
+                          () -> svgShapeFactory)
+                .delegate(Subprocess.class,
+                          new SubprocessShapeDef(),
+                          () -> svgShapeFactory)
+                .delegate(Subcase.class,
+                          new SubcaseShapeDef(),
+                          () -> svgShapeFactory);
+//                .delegate(StartNoneEvent.class,
+//                          new NullShapeDef(),
+//                          () -> svgShapeFactory)
+//                .delegate(ParallelGateway.class,
+//                          new NullShapeDef(),
+//                          () -> svgShapeFactory)
+//                .delegate(ExclusiveGateway.class,
+//                          new NullShapeDef(),
+//                          () -> svgShapeFactory)
+//                .delegate(Lane.class,
+//                          new NullShapeDef(),
+//                          () -> svgShapeFactory)
+//                .delegate(EndTerminateEvent.class,
+//                          new NullShapeDef(),
+//                          () -> svgShapeFactory)
+//                .delegate(EndNoneEvent.class,
+//                          new NullShapeDef(),
+//                          () -> svgShapeFactory)
+//                .delegate(SequenceFlow.class,
+//                          new SequenceFlowConnectorDef(),
+//                          () -> basicShapesFactory);
     }
 
     @Override
-    public Shape newShape(final BPMNDefinition definition) {
+    public Shape newShape(final CaseManagmentDefinition definition) {
         return delegateShapeFactory.newShape(definition);
     }
 
     @Override
     public Glyph getGlyph(final String definitionId) {
+        GWT.log("definitionId: " + definitionId);
         return delegateShapeFactory.getGlyph(definitionId);
     }
 }

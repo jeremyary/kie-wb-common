@@ -16,56 +16,12 @@
 
 package org.kie.workbench.common.stunner.cm.project.factory;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
-import org.kie.workbench.common.stunner.bpmn.project.factory.impl.BPMNProjectDiagramFactory;
-import org.kie.workbench.common.stunner.cm.CaseManagementDefinitionSet;
-import org.kie.workbench.common.stunner.cm.definition.CaseManagementDiagram;
-import org.kie.workbench.common.stunner.core.diagram.Metadata;
-import org.kie.workbench.common.stunner.core.factory.impl.BindableDiagramFactory;
-import org.kie.workbench.common.stunner.core.graph.Graph;
-import org.kie.workbench.common.stunner.core.graph.content.definition.DefinitionSet;
+import org.kie.workbench.common.stunner.cm.factory.CaseManagementFactory;
+import org.kie.workbench.common.stunner.core.factory.diagram.DiagramFactory;
 import org.kie.workbench.common.stunner.project.diagram.ProjectDiagram;
 import org.kie.workbench.common.stunner.project.diagram.ProjectMetadata;
 
-@Dependent
-public class CaseManagementProjectDiagramFactory
-        extends BindableDiagramFactory<ProjectMetadata, ProjectDiagram> {
+public interface CaseManagementProjectDiagramFactory extends CaseManagementFactory,
+                                                             DiagramFactory<ProjectMetadata, ProjectDiagram> {
 
-    private final BPMNProjectDiagramFactory bpmnDiagramFactory;
-
-    protected CaseManagementProjectDiagramFactory() {
-        this(null);
-    }
-
-    @Inject
-    public CaseManagementProjectDiagramFactory(final BPMNProjectDiagramFactory bpmnDiagramFactory) {
-        this.bpmnDiagramFactory = bpmnDiagramFactory;
-    }
-
-    @PostConstruct
-    public void init() {
-        this.bpmnDiagramFactory.setDiagramType(CaseManagementDiagram.class);
-    }
-
-    @Override
-    protected Class<?> getDefinitionSetType() {
-        return CaseManagementDefinitionSet.class;
-    }
-
-    @Override
-    public Class<? extends Metadata> getMetadataType() {
-        return ProjectMetadata.class;
-    }
-
-    @Override
-    public ProjectDiagram build(final String name,
-                                final ProjectMetadata metadata,
-                                final Graph<DefinitionSet, ?> graph) {
-        return bpmnDiagramFactory.build(name,
-                                        metadata,
-                                        graph);
-    }
 }

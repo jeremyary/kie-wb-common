@@ -16,7 +16,10 @@
 
 package org.kie.workbench.common.stunner.cm.client.palette;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -25,153 +28,121 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.kie.workbench.common.stunner.bpmn.definition.AdHocSubprocess;
-import org.kie.workbench.common.stunner.bpmn.definition.BusinessRuleTask;
-import org.kie.workbench.common.stunner.bpmn.definition.EndNoneEvent;
-import org.kie.workbench.common.stunner.bpmn.definition.ExclusiveGateway;
-import org.kie.workbench.common.stunner.bpmn.definition.Lane;
-import org.kie.workbench.common.stunner.bpmn.definition.NoneTask;
-import org.kie.workbench.common.stunner.bpmn.definition.ParallelGateway;
-import org.kie.workbench.common.stunner.bpmn.definition.SequenceFlow;
-import org.kie.workbench.common.stunner.bpmn.definition.StartNoneEvent;
-import org.kie.workbench.common.stunner.bpmn.definition.UserTask;
-import org.kie.workbench.common.stunner.bpmn.workitem.ServiceTask;
-import org.kie.workbench.common.stunner.client.widgets.components.glyph.BS3IconTypeGlyph;
-import org.kie.workbench.common.stunner.cm.definition.CaseManagementDiagram;
-import org.kie.workbench.common.stunner.cm.definition.ReusableSubprocess;
-import org.kie.workbench.common.stunner.cm.qualifiers.CaseManagementEditor;
-import org.kie.workbench.common.stunner.core.api.DefinitionManager;
+import org.kie.workbench.common.stunner.bpmn.qualifiers.BPMN;
+import org.kie.workbench.common.stunner.cm.client.resources.CaseManagementImageResources;
+import org.kie.workbench.common.stunner.cm.definition.CaseManagementDiagramImpl;
+import org.kie.workbench.common.stunner.cm.definition.HumanTask;
+import org.kie.workbench.common.stunner.cm.definition.Stage;
+import org.kie.workbench.common.stunner.cm.definition.StripLane;
+import org.kie.workbench.common.stunner.cm.definition.Subcase;
+import org.kie.workbench.common.stunner.cm.definition.Subprocess;
+import org.kie.workbench.common.stunner.cm.definition.general.CaseManagementCategories;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
 import org.kie.workbench.common.stunner.core.client.components.palette.DefaultPaletteDefinition;
+import org.kie.workbench.common.stunner.core.client.components.palette.DefaultPaletteDefinitionProviders;
 import org.kie.workbench.common.stunner.core.client.components.palette.ExpandedPaletteDefinitionBuilder;
 import org.kie.workbench.common.stunner.core.client.components.palette.PaletteDefinitionBuilder;
-import org.kie.workbench.common.stunner.core.definition.shape.Glyph;
+import org.kie.workbench.common.stunner.core.client.shape.SvgDataUriGlyph;
+import org.kie.workbench.common.stunner.core.i18n.StunnerTranslationService;
 
-import static org.kie.workbench.common.stunner.core.client.components.palette.DefaultPaletteDefinitionProviders.getId;
 import static org.kie.workbench.common.stunner.core.client.components.palette.DefaultPaletteDefinitionProviders.isType;
 
 @Dependent
-@CaseManagementEditor
+@BPMN
 public class CaseManagementPaletteDefinitionBuilder
         implements PaletteDefinitionBuilder<AbstractCanvasHandler, DefaultPaletteDefinition> {
 
-    public static final String STAGE = "Stage";
-    public static final String SUBCASE = "Subcase";
-    public static final String USERTASK = "User Task";
-    public static final String SUBPROCESS = "Subprocess";
+    private static final DefaultPaletteDefinitionProviders.CategoryDefinitionProvider CATEGORY_DEFINITION =
+            new DefaultPaletteDefinitionProviders.CategoryDefinitionProvider(CaseManagementCategories.class)
 
-    private static final Map<String, String> CAT_TITLES = new HashMap<String, String>(4) {{
-        put(SUBPROCESS, SUBPROCESS);
-        put(USERTASK, USERTASK);
-        put(SUBCASE, SUBCASE);
-        put(STAGE, STAGE);
-    }};
+                    .put(CaseManagementCategories.STAGE,
+                         category -> category
+                                 .bindToDefinition(Stage.class)
+                                 .useGlyph(SvgDataUriGlyph.Builder.build(
+                                         CaseManagementImageResources.INSTANCE.stage().getSafeUri())))
 
-    private static final Map<String, Class<?>> CAT_DEFAULTS = new HashMap<String, Class<?>>(4) {{
-        put(SUBPROCESS,
-            BusinessRuleTask.class);
-        put(USERTASK,
-            UserTask.class);
-        put(SUBCASE,
-            ReusableSubprocess.class);
-        put(STAGE,
-            AdHocSubprocess.class);
-    }};
+                    .put(CaseManagementCategories.TASK,
+                         category -> category
+                                 .bindToDefinition(HumanTask.class)
+                                 .useGlyph(SvgDataUriGlyph.Builder.build(
+                                         CaseManagementImageResources.INSTANCE.userTask().getSafeUri())))
 
-    @SuppressWarnings("unchecked")
-    private final static Map<String, Glyph> CATEGORY_GLYPHS = new HashMap<String, Glyph>(4) {{
-        put(SUBPROCESS,
-            BS3IconTypeGlyph.create(IconType.LIST));
-        put(USERTASK,
-            BS3IconTypeGlyph.create(IconType.USER));
-        put(SUBCASE,
-            BS3IconTypeGlyph.create(IconType.COPY));
-        put(STAGE,
-            BS3IconTypeGlyph.create(IconType.TASKS));
-    }};
+                    .put(CaseManagementCategories.SUBPROCESS,
+                         category -> category
+                                 .bindToDefinition(Subprocess.class)
+                                 .useGlyph(SvgDataUriGlyph.Builder.build(
+                                         CaseManagementImageResources.INSTANCE.subprocess().getSafeUri())))
 
-    private static final Map<String, String> DEFINITION_CATEGORY_MAPPINGS = new HashMap<String, String>(4) {{
-        put(BusinessRuleTask.class.getName(),
-            SUBPROCESS);
-        put(UserTask.class.getName(),
-            USERTASK);
-        put(ReusableSubprocess.class.getName(),
-            SUBCASE);
-        put(AdHocSubprocess.class.getName(),
-            STAGE);
-    }};
+                    .put(CaseManagementCategories.SUBCASE,
+                         category -> category
+                                 .bindToDefinition(Subcase.class)
+                                 .useGlyph(SvgDataUriGlyph.Builder.build(
+                                         CaseManagementImageResources.INSTANCE.subcase().getSafeUri())));
+
+    //palette categories order customization.
+    private static final List<String> CATEGORIES_ORDER = new ArrayList<String>() {
+        {
+            add(CaseManagementCategories.STAGE);
+            add(CaseManagementCategories.TASK);
+            add(CaseManagementCategories.SUBPROCESS);
+            add(CaseManagementCategories.SUBCASE);
+        }
+    };
+
+    // lane/containers type of custom group not required in CM just yet
+    private static final Map<String, String> CUSTOM_GROUPS = new HashMap<>();
 
     private final ExpandedPaletteDefinitionBuilder paletteDefinitionBuilder;
-    private final DefinitionManager definitionManager;
+    private final StunnerTranslationService translationService;
 
     // CDI proxy.
     protected CaseManagementPaletteDefinitionBuilder() {
-        this(null, null);
+        this(null,
+             null);
     }
 
     @Inject
     public CaseManagementPaletteDefinitionBuilder(final ExpandedPaletteDefinitionBuilder paletteDefinitionBuilder,
-                                                  final DefinitionManager definitionManager) {
+                                                  final StunnerTranslationService translationService) {
         this.paletteDefinitionBuilder = paletteDefinitionBuilder;
-        this.definitionManager = definitionManager;
+        this.translationService = translationService;
     }
 
     @PostConstruct
     public void init() {
         paletteDefinitionBuilder
                 .itemFilter(isDefinitionAllowed())
-                .morphDefinitionProvider(def -> null)
-                .categoryFilter(isCategoryAllowed())
-                .categoryProvider(this::getCategoryFor)
-                .categoryDefinitionIdProvider(category -> getId(CAT_DEFAULTS.get(category)))
-                .categoryGlyphProvider(CATEGORY_GLYPHS::get)
-                .categoryMessages(new ExpandedPaletteDefinitionBuilder.ItemMessageProvider() {
-                    @Override
-                    public String getTitle(String id) {
-                        return CAT_TITLES.get(id);
-                    }
-
-                    @Override
-                    public String getDescription(String id) {
-                        return CAT_TITLES.get(id);
-                    }
-                });
-    }
-
-    private String getCategoryFor(final Object definition) {
-        final String fqcn = definition.getClass().getName();
-        final String categoryId = DEFINITION_CATEGORY_MAPPINGS.get(fqcn);
-        return null != categoryId ?
-                categoryId :
-                definitionManager.adapters().forDefinition().getCategory(definition);
-    }
-
-    private Predicate<String> isCategoryAllowed() {
-        return CAT_TITLES::containsKey;
-    }
-
-    private Predicate<String> isDefinitionAllowed() {
-        return isType(CaseManagementDiagram.class)
-                .or(isType(NoneTask.class))
-                .or(isType(ServiceTask.class))
-                .or(isType(Lane.class))
-                .or(isType(StartNoneEvent.class))
-                .or(isType(EndNoneEvent.class))
-                .or(isType(ParallelGateway.class))
-                .or(isType(ExclusiveGateway.class))
-                .or(isType(SequenceFlow.class))
-                .negate();
+                .categoryFilter(category -> !CaseManagementCategories.CONTAINERS.equals(category))
+                .categoryDefinitionIdProvider(CATEGORY_DEFINITION.definitionIdProvider())
+                .categoryGlyphProvider(CATEGORY_DEFINITION.glyphProvider())
+                .categoryMessages(CATEGORY_DEFINITION.categoryMessageProvider(translationService))
+                .customGroupIdProvider(CUSTOM_GROUPS::get)
+                .customGroupMessages(new DefaultPaletteDefinitionProviders.DefaultCustomGroupMessageProvider(translationService));
     }
 
     @Override
     public void build(final AbstractCanvasHandler canvasHandler,
-                      final Consumer<DefaultPaletteDefinition> paletteDefinition) {
-        paletteDefinitionBuilder.build(canvasHandler,
-                                       paletteDefinition);
+                      final Consumer<DefaultPaletteDefinition> paletteDefinitionConsumer) {
+        paletteDefinitionBuilder
+                .build(canvasHandler,
+                       paletteDefinition -> {
+                           paletteDefinition
+                                   .getItems()
+                                   .sort(Comparator.comparingInt(item -> getCategoryOrder(item.getId())));
+                       });
+    }
+
+    private int getCategoryOrder(final String categoryId) {
+        return CATEGORIES_ORDER.indexOf(categoryId);
     }
 
     ExpandedPaletteDefinitionBuilder getPaletteDefinitionBuilder() {
         return paletteDefinitionBuilder;
+    }
+
+    private Predicate<String> isDefinitionAllowed() {
+        return isType(CaseManagementDiagramImpl.class)
+                .or(isType(StripLane.class))
+                .negate();
     }
 }
