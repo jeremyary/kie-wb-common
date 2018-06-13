@@ -16,26 +16,11 @@
 
 package org.kie.workbench.common.stunner.cm;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
-import org.kie.workbench.common.stunner.core.client.api.SessionManager;
 
 @EntryPoint
 @Bundle("resources/i18n/CaseManagementDefinitionSetConstants.properties")
 public class CaseManagementEntryPoint {
 
-    private SessionManager sessionManager;
-
-    @Inject
-    public CaseManagementEntryPoint(SessionManager sessionManager) {
-        this.sessionManager = sessionManager;
-    }
-
-    @PostConstruct
-    public void init() {
-        // reserved for future session use similar to StartSignalEvent, etc. in StunnerBPMNEntryPoint
-    }
 }
