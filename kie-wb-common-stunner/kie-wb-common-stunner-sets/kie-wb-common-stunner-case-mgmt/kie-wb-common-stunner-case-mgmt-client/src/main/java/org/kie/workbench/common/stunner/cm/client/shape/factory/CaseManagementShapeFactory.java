@@ -21,11 +21,12 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import org.kie.workbench.common.stunner.bpmn.definition.StartNoneEvent;
+import org.kie.workbench.common.stunner.cm.client.shape.def.CaseManagementDiagramShapeDef;
 import org.kie.workbench.common.stunner.cm.client.shape.def.HumanTaskShapeDef;
 import org.kie.workbench.common.stunner.cm.client.shape.def.StageShapeDef;
 import org.kie.workbench.common.stunner.cm.client.shape.def.SubcaseShapeDef;
 import org.kie.workbench.common.stunner.cm.client.shape.def.SubprocessShapeDef;
-import org.kie.workbench.common.stunner.cm.client.shape.def.CaseManagementDiagramShapeDef;
 import org.kie.workbench.common.stunner.cm.definition.CaseManagementDiagramImpl;
 import org.kie.workbench.common.stunner.cm.definition.HumanTask;
 import org.kie.workbench.common.stunner.cm.definition.Stage;
@@ -73,8 +74,8 @@ public class CaseManagementShapeFactory implements ShapeFactory<CaseManagmentDef
                 .delegate(Subcase.class,
                           new SubcaseShapeDef(),
                           () -> svgShapeFactory);
-//                .delegate(StartNoneEvent.class,
-//                          new NullShapeDef(),
+                .delegate(StartNoneEvent.class,
+                          new NullShapeDef(),
 //                          () -> svgShapeFactory)
 //                .delegate(ParallelGateway.class,
 //                          new NullShapeDef(),
